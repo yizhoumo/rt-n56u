@@ -13,7 +13,7 @@ steps:
   inputs:
     script: |
       sudo apt-get update
-      sudo apt-get install -y autoconf automake autopoint bison build-essential flex gawk gettext git gperf libtool pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev texinfo python-docutils
+      sudo apt-get install -y autoconf automake autopoint bison build-essential flex gawk gettext gperf libtool pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev texinfo python-docutils
 
 - task: CopyFiles@2
   displayName: 'Copy toolchain'
@@ -34,7 +34,7 @@ steps:
   displayName: 'Build firmware'
   inputs:
     script: |
-      cp configs/templates/newifi_y1s_base.config .config
+      cp -f configs/templates/newifi_y1s_base.config .config
       sudo ./clear_tree
       sudo ./build_firmware
     workingDirectory: 'trunk'
