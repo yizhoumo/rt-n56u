@@ -34,7 +34,7 @@ steps:
   displayName: 'Build firmware'
   inputs:
     script: |
-      cp -f configs/templates/newifi_y1s_base.config .config
+      cp -f configs/templates/newifi_y1s_nano.config .config
       sudo ./clear_tree
       sudo ./build_firmware
     workingDirectory: 'trunk'
