@@ -1,0 +1,53 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-16.04'
+
+steps:
+- checkout: self
+  fetchDepth: 1
+
+- task: CmdLine@2
+  displayName: 'Install packages'
+  inputs:
+    script: |
+      sudo apt-get update
+      sudo apt-get install -y autoconf automake autopoint bison build-essential flex gawk gettext git gperf libtool pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev texinfo python-docutils
+
+- task: CopyFiles@2
+  displayName: 'Copy toolchain'
+  inputs:
+    SourceFolder: 'toolchain-mipsel'
+    Contents: '**'
+    TargetFolder: '/opt/rt-n56u/toolchain-mipsel'
+
+- task: CmdLine@2
+  displayName: 'Build toolchain'
+  inputs:
+    script: |
+      sudo ./clean_sources
+      sudo ./build_toolchain
+    workingDirectory: '/opt/rt-n56u/toolchain-mipsel'
+
+- task: CmdLine@2
+  displayName: 'Build firmware'
+  inputs:
+    script: |
+      cp configs/templates/newifi_y1s_base.config .config
+      sudo ./clear_tree
+      sudo ./build_firmware
+    workingDirectory: 'trunk'
+
+- task: CopyFiles@2
+  displayName: 'Copy firmware'
+  inputs:
+    SourceFolder: 'trunk/images'
+    Contents: '**.trx'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
